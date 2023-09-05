@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Fetch rugby data.
+
+# Controls when the workflow will run
+on:
+  schedule:
+    # Runs "at hour 6 past every day" (see https://crontab.guru)
+    - cron: '00 7 * * *'
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: keithweaver/aws-s3-github-action@v1.0.0 # Verifies the recursive flag
+        name: sync folder
+        with:
+          command: sync
+          source: ${{ secrets.S3_BUCKET_RUGBY }}
+          destination: ./data/
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: eu-west-1
+          flags: --delete
+      - name: Commit changes
+        run: |
+         git config --local user.email "action@github.com"
+         git config --local user.name "GitHub Action"
+         git add .
+         git diff-index --quiet HEAD || git commit -m "rugby data update" -a
+         git push origin main:main
