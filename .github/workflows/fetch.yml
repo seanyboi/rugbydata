@@ -25,7 +25,7 @@ jobs:
         with:
           command: sync
           source: ${{ secrets.S3_BUCKET }}
-          destination: ./data/
+          destination: ./data/v3/
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: eu-west-1
